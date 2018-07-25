@@ -8,13 +8,13 @@ message: |-
 metadata:
   annotations:
     iconClass: icon-openjdk
-    openshift.io/display-name: ${SERVICE_NAME}
-    openshift.io/documentation-url: https://github.com/abadelt/fabricstore/
+    openshift.io/display-name: simple-app
+    openshift.io/documentation-url: https://github.com/abadelt/simpleApp/
     openshift.io/long-description:
     openshift.io/provider-display-name:
     openshift.io/support-url:
-    tags: java,${SERVICE_NAME}
-  name: ${SERVICE_NAME}
+    tags: java,simple-app
+  name: simple-app
 objects:
 
 - kind: ImageStream
