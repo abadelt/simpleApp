@@ -63,33 +63,58 @@ spec:
                     } // steps
                 } // stage
                 stage('build') {
-                    steps {
-                        script {
-                            openshift.withCluster() {
-                                openshift.withProject() {
-                                    def builds = openshift.selector("bc", templateName).related('builds')
-                                    echo "Builds size is: ${builds.count()}"
-                                    if (builds.count() == 0) {
-                                        return false
-                                    } else {
-                                        builds.untilEach(1) {
-                                            def phase = it.object().status.phase
-                                            echo "Build status for ${it.name()} is ${phase}"
-                                            if (phase == "Failed") {
-                                                error("Build failed !!!")
+                    parallel {
+                        stage ('follow build') {
+                            steps {
+                                script {
+                                    openshift.withCluster() {
+                                        openshift.withProject() {
+                                            def builds = openshift.selector("bc", templateName).related('builds')
+                                            echo "Builds size is: ${builds.count()}"
+                                            if (builds.count() != 1) {
+                                                return false
+                                            } else {
+                                                parallel {
+                                                    builds.untilEach(1) {
+                                                        def phase = it.object().status.phase
+                                                        echo "Build status for ${it.name()} is ${phase}"
+                                                        if (phase == "Failed" || phase == "Error") {
+                                                            error("Build failed !!!")
+                                                        }
+                                                        return (phase == "Complete")
+                                                    }
+                                                }
                                             }
-                                            return (phase == "Complete")
+
                                         }
                                     }
-                                    sh 'echo `pwd`'
-                                    sh 'echo `ls -al`'
-                                    sh 'gradle test'
-                                    junit '**/test-results/test/TEST-*.xml'
+                                }
+                            } // script
+                        }
+                        stage ('sync test results') {
+                            steps {
+                                script {
+                                    openshift.withCluster() {
+                                        openshift.withProject() {
+                                            sh 'mkdir test-results'
+                                            openshift.rsync("simpleapp-1-build:/opt/app-root/src/source/build/test-results",
+                                                "./test-results")
+                                            junit 'test-results/test/TEST-*.xml'
+                                        }
+                                    }
                                 }
                             }
-                        } // script
-                    } // steps
+                        }
+                    }
                 } // stage
+                stage('Unit Test') {
+                    steps {
+                        sh 'echo `pwd`'
+                        sh 'echo `ls -al`'
+                        // sh 'cd source && gradle test'
+                        // junit '**/test-results/test/TEST-*.xml'
+                    }
+                }
                 stage('deploy') {
                     steps {
                         script {

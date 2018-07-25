@@ -40,7 +40,8 @@ objects:
       app: ${SERVICE_NAME}
     name: ${SERVICE_NAME}
   spec:
-    postCommit: {}
+    postCommit:
+      script: cd source && gradle test
     resources: {}
     runPolicy: Serial
     source:
