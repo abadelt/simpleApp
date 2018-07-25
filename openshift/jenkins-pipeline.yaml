@@ -11,7 +11,7 @@ spec:
     jenkinsPipelineStrategy:
       jenkinsfile: |-
         def templatePath = 'https://raw.githubusercontent.com/abadelt/simpleApp/master/openshift/simpleApp.yaml'
-        def templateName = 'simple-app'
+        def templateName = 'simpleapp'
         pipeline {
             agent any
             environment {

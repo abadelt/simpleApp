@@ -1,16 +1,16 @@
-kind: Template
 apiVersion: template.openshift.io/v1
+kind: Template
 labels:
-  template: simple-app
+  template: simpleapp
 message: |-
   The following service(s) have been created in your project: ${SERVICE_NAME}.
 metadata:
   annotations:
     iconClass: icon-openjdk
-    openshift.io/display-name: simple-app
+    openshift.io/display-name: simpleapp
     openshift.io/documentation-url: https://github.com/abadelt/simpleApp/
-    tags: java,simple-app
-  name: simple-app
+    tags: java,simpleapp
+  name: simpleapp
 
 objects:
 - kind: ImageStream
@@ -87,15 +87,12 @@ objects:
       type: Rolling
     template:
       metadata:
-        annotations:
-          openshift.io/generated-by: OpenShiftNewApp
-        creationTimestamp: null
         labels:
           app: ${SERVICE_NAME}
           deploymentconfig: ${SERVICE_NAME}
       spec:
         containers:
-          image: docker-registry.default.svc:5000/${PROJECT}/${SERVICE_NAME}
+        - image: docker-registry.default.svc:5000/${PROJECT}/${SERVICE_NAME}
           imagePullPolicy: Always
           name: ${SERVICE_NAME}
           resources: {}
@@ -128,5 +125,5 @@ parameters:
   displayName: Fabricstore Service Name
   name: SERVICE_NAME
   required: true
-  value: simple-app
+  value: simpleapp
 
