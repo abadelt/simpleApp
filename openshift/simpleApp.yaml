@@ -1,0 +1,137 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+labels:
+  template: simple-app
+message: |-
+  The following service(s) have been created in your project: ${SERVICE_NAME}.
+
+metadata:
+  annotations:
+    iconClass: icon-openjdk
+    openshift.io/display-name: ${SERVICE_NAME}
+    openshift.io/documentation-url: https://github.com/abadelt/fabricstore/
+    openshift.io/long-description:
+    openshift.io/provider-display-name:
+    openshift.io/support-url:
+    tags: java,${SERVICE_NAME}
+  name: ${SERVICE_NAME}
+objects:
+
+- kind: ImageStream
+  apiVersion: v1
+  metadata:
+    labels:
+      app: ${SERVICE_NAME}
+    name: ${SERVICE_NAME}
+    annotations:
+      openshift.io/display-name: fabricstore
+  spec:
+  tags:
+  - name: '1.0'
+    annotations:
+      openshift.io/display-name: ${SERVICE_NAME}
+      description: >-
+        Build and run ${SERVICE_NAME} on CentOS 7.
+      iconClass: icon-openjdk
+      tags: 'builder,java,${SERVICE_NAME}'
+      supports: 'java'
+      version: '1.0'
+
+- kind: BuildConfig
+  apiVersion: v1
+  metadata:
+    labels:
+      app: ${SERVICE_NAME}
+    name: ${SERVICE_NAME}
+  spec:
+    postCommit: {}
+    resources: {}
+    runPolicy: Serial
+    source:
+      git:
+        uri: https://github.com/abadelt/simpleApp
+      type: Git
+    strategy:
+      sourceStrategy:
+        from:
+          kind: ImageStreamTag
+          name: s2i-java:latest
+          namespace: ${PROJECT}
+      type: Source
+    output:
+      to:
+        kind: ImageStreamTag
+        name: ${SERVICE_NAME}:latest
+    triggers:
+    - type: ConfigChange
+    - imageChange: {}
+      type: ImageChange
+
+- kind: DeploymentConfig
+  apiVersion: v1
+  metadata:
+    labels:
+      app: ${SERVICE_NAME}
+    name: ${SERVICE_NAME}
+  spec:
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      app: ${SERVICE_NAME}
+      deploymentconfig: ${SERVICE_NAME}
+    strategy:
+      activeDeadlineSeconds: 21600
+      resources: {}
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Rolling
+    template:
+      metadata:
+        annotations:
+          openshift.io/generated-by: OpenShiftNewApp
+        creationTimestamp: null
+        labels:
+          app: ${SERVICE_NAME}
+          deploymentconfig: ${SERVICE_NAME}
+      spec:
+        containers:
+          image: docker-registry.default.svc:5000/${PROJECT}/${SERVICE_NAME}
+          imagePullPolicy: Always
+          name: ${SERVICE_NAME}
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - ${SERVICE_NAME}
+        from:
+          kind: ImageStreamTag
+          name: ${SERVICE_NAME}:latest
+          namespace: frontend-sandbox
+      type: ImageChange
+
+
+parameters:
+- name: PROJECT
+  displayName: Project (= namespace) name
+  description: Name of the project in which the created resources and referenced ImageStreams reside.
+  value: frontend-sandbox
+- description: The name of the OpenShift Service exposed for this application.
+  displayName: Fabricstore Service Name
+  name: SERVICE_NAME
+  required: true
+  value: simple-app
+
