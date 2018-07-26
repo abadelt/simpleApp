@@ -41,7 +41,7 @@ objects:
     name: ${SERVICE_NAME}
   spec:
     postCommit:
-      script: cd source && gradle test
+      script: cd source && gradle test && sleep 60
     resources: {}
     runPolicy: Serial
     source:
