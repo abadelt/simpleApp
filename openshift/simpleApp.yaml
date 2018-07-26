@@ -61,8 +61,6 @@ objects:
         name: ${SERVICE_NAME}:latest
     triggers:
     - type: ConfigChange
-    - imageChange: {}
-      type: ImageChange
 
 - kind: DeploymentConfig
   apiVersion: v1
