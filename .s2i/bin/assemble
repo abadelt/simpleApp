@@ -1,0 +1,22 @@
+#!/bin/bash
+
+touch /tmp/STARTED
+echo "Touched /tmp/STARTED"
+
+ls -al /tmp/
+ls -al /opt/
+
+hostname
+
+hostname -a
+
+hostname -A
+
+echo "Sleeping for 15 minutes"
+sleep 900
+
+touch /tmp/FINISHED
+echo "Touched /tmp/FINISHED"
+
+
+exit 0
