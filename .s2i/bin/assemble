@@ -12,8 +12,8 @@ hostname -a
 
 hostname -A
 
-echo "Sleeping for 15 seconds"
-sleep 15
+echo "Sleeping for 1 second"
+sleep 1
 
 touch /tmp/FINISHED
 echo "Touched /tmp/FINISHED"
