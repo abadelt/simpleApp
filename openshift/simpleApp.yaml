@@ -51,16 +51,15 @@ objects:
     strategy:
       sourceStrategy:
         from:
-          kind: ImageStreamTag
-          name: s2i-java:latest
+          kind: "ImageStreamTag"
+          name: "s2i-java:latest"
           namespace: ${PROJECT}
         forcePull: true
       type: Source
     output:
       to:
-        kind: ImageStreamTag
-        name: ${SERVICE_NAME}:latest
-        namespace: ${PROJECT}
+        kind: "ImageStreamTag"
+        name: "${SERVICE_NAME}:latest"
     triggers:
     - type: ConfigChange
 
