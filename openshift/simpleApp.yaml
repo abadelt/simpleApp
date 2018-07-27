@@ -59,7 +59,7 @@ objects:
     output:
       to:
         kind: ImageStreamTag
-        name: ${SERVICE_NAME}-dev:latest
+        name: ${SERVICE_NAME}:latest
         namespace: ${PROJECT}
     triggers:
     - type: ConfigChange
