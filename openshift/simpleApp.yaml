@@ -20,7 +20,7 @@ objects:
       app: ${SERVICE_NAME}
     name: ${SERVICE_NAME}
     annotations:
-      openshift.io/display-name: fabricstore
+      openshift.io/display-name: ${SERVICE_NAME}
   spec:
   tags:
   - name: '1.0'
@@ -54,11 +54,13 @@ objects:
           kind: ImageStreamTag
           name: s2i-java:latest
           namespace: ${PROJECT}
+        forcePull: true
       type: Source
     output:
       to:
         kind: ImageStreamTag
         name: ${SERVICE_NAME}:latest
+        namespace: ${PROJECT}
     triggers:
     - type: ConfigChange
 
@@ -104,16 +106,6 @@ objects:
         terminationGracePeriodSeconds: 30
     test: false
     triggers:
-    - type: ConfigChange
-    - imageChangeParams:
-        automatic: true
-        containerNames:
-        - ${SERVICE_NAME}
-        from:
-          kind: ImageStreamTag
-          name: ${SERVICE_NAME}:latest
-          namespace: frontend-sandbox
-      type: ImageChange
 
 parameters:
 - name: PROJECT
