@@ -112,13 +112,13 @@ objects:
   metadata:
     labels:
       app: ${SERVICE_NAME}
-    name: "${SERVICE_NAME}-unittest"
+    name: ${SERVICE_NAME}-unittest
   spec:
-    replicas: 0
+    replicas: 1
     revisionHistoryLimit: 10
     selector:
       app: ${SERVICE_NAME}
-      deploymentconfig: ${SERVICE_NAME}
+      deploymentconfig: ${SERVICE_NAME}-unittest
     strategy:
       activeDeadlineSeconds: 21600
       resources: {}
@@ -133,17 +133,17 @@ objects:
       metadata:
         labels:
           app: ${SERVICE_NAME}
-          deploymentconfig: ${SERVICE_NAME}
+          deploymentconfig: ${SERVICE_NAME}-unittest
       spec:
         containers:
         - image: docker-registry.default.svc:5000/${PROJECT}/${SERVICE_NAME}
           imagePullPolicy: Always
-          name: ${SERVICE_NAME}
+          name: ${SERVICE_NAME}-unittest
           resources: {}
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
         dnsPolicy: ClusterFirst
-        restartPolicy: Never
+        restartPolicy: Always
         schedulerName: default-scheduler
         securityContext: {}
         terminationGracePeriodSeconds: 30
