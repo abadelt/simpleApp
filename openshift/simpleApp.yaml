@@ -71,7 +71,7 @@ objects:
       app: ${SERVICE_NAME}
     name: ${SERVICE_NAME}
   spec:
-    replicas: 1
+    replicas: 0
     revisionHistoryLimit: 10
     selector:
       app: ${SERVICE_NAME}
@@ -114,7 +114,7 @@ objects:
       app: ${SERVICE_NAME}
     name: ${SERVICE_NAME}-unittest
   spec:
-    replicas: 1
+    replicas: 0
     revisionHistoryLimit: 10
     selector:
       app: ${SERVICE_NAME}
