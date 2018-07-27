@@ -111,7 +111,7 @@ objects:
   metadata:
     labels:
       app: ${SERVICE_NAME}
-    name: ${SERVICE_NAME}-unit-tests
+    name: "${SERVICE_NAME}-unit-tests"
   spec:
     replicas: 0
     revisionHistoryLimit: 10
