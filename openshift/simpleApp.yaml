@@ -107,6 +107,49 @@ objects:
     test: false
     triggers:
 
+- kind: DeploymentConfig
+  apiVersion: v1
+  metadata:
+    labels:
+      app: ${SERVICE_NAME}
+    name: "${SERVICE_NAME}-unittest"
+  spec:
+    replicas: 0
+    revisionHistoryLimit: 10
+    selector:
+      app: ${SERVICE_NAME}
+      deploymentconfig: ${SERVICE_NAME}
+    strategy:
+      activeDeadlineSeconds: 21600
+      resources: {}
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Rolling
+    template:
+      metadata:
+        labels:
+          app: ${SERVICE_NAME}
+          deploymentconfig: ${SERVICE_NAME}
+      spec:
+        containers:
+        - image: docker-registry.default.svc:5000/${PROJECT}/${SERVICE_NAME}
+          imagePullPolicy: Always
+          name: ${SERVICE_NAME}
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Never
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+    test: false
+    triggers:
+
 parameters:
 - name: PROJECT
   displayName: Project (= namespace) name
