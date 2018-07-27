@@ -51,15 +51,16 @@ objects:
     strategy:
       sourceStrategy:
         from:
-          kind: "ImageStreamTag"
-          name: "s2i-java:latest"
+          kind: ImageStreamTag
+          name: s2i-java:latest
           namespace: ${PROJECT}
         forcePull: true
       type: Source
     output:
       to:
-        kind: "ImageStreamTag"
-        name: "${SERVICE_NAME}:latest"
+        kind: ImageStreamTag
+        name: ${SERVICE_NAME}:latest
+        namespace: ${PROJECT}
     triggers:
     - type: ConfigChange
 
@@ -70,13 +71,13 @@ objects:
       app: ${SERVICE_NAME}
     name: ${SERVICE_NAME}
   spec:
-    replicas: 0
+    replicas: 1
     revisionHistoryLimit: 10
     selector:
       app: ${SERVICE_NAME}
       deploymentconfig: ${SERVICE_NAME}
     strategy:
-      activeDeadlineSeconds: 21599
+      activeDeadlineSeconds: 21600
       resources: {}
       rollingParams:
         intervalSeconds: 1
@@ -92,7 +93,7 @@ objects:
           deploymentconfig: ${SERVICE_NAME}
       spec:
         containers:
-        - image: docker-registry.default.svc:5000/${PROJECT}/${SERVICE_NAME}:latest-stable
+        - image: docker-registry.default.svc:5000/${PROJECT}/${SERVICE_NAME}
           imagePullPolicy: Always
           name: ${SERVICE_NAME}
           resources: {}
@@ -100,49 +101,6 @@ objects:
           terminationMessagePolicy: File
         dnsPolicy: ClusterFirst
         restartPolicy: Always
-        schedulerName: default-scheduler
-        securityContext: {}
-        terminationGracePeriodSeconds: 30
-    test: false
-    triggers:
-
-- kind: DeploymentConfig
-  apiVersion: v1
-  metadata:
-    labels:
-      app: ${SERVICE_NAME}
-    name: "${SERVICE_NAME}-unit-tests"
-  spec:
-    replicas: 0
-    revisionHistoryLimit: 10
-    selector:
-      app: ${SERVICE_NAME}
-      deploymentconfig: ${SERVICE_NAME}
-    strategy:
-      activeDeadlineSeconds: 21598
-      resources: {}
-      rollingParams:
-        intervalSeconds: 1
-        maxSurge: 25%
-        maxUnavailable: 25%
-        timeoutSeconds: 600
-        updatePeriodSeconds: 1
-      type: Rolling
-    template:
-      metadata:
-        labels:
-          app: ${SERVICE_NAME}
-          deploymentconfig: ${SERVICE_NAME}
-      spec:
-        containers:
-        - image: docker-registry.default.svc:5000/${PROJECT}/${SERVICE_NAME}:latest
-          imagePullPolicy: Always
-          name: ${SERVICE_NAME}
-          resources: {}
-          terminationMessagePath: /dev/termination-log
-          terminationMessagePolicy: File
-        dnsPolicy: ClusterFirst
-        restartPolicy: Never
         schedulerName: default-scheduler
         securityContext: {}
         terminationGracePeriodSeconds: 30
