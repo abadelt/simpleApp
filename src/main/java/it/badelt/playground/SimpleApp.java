@@ -11,7 +11,7 @@ public class SimpleApp {
         try {
             Thread.sleep(1*60*60*1000);
         } catch (InterruptedException e) {
-            System.out.println("Sleep was interrupted.");
+            System.out.println("My sleep was interrupted.");
             e.printStackTrace();
         }
         System.out.println("Done - exiting process.");
